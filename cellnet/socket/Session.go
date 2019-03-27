@@ -1,11 +1,12 @@
 package socket
 
 import (
-	"Chat/cellnet"
-	"Chat/cellnet/internal"
 	"io"
 	"net"
 	"sync"
+
+	"Chat/cellnet"
+	"Chat/cellnet/internal"
 )
 
 const SendQueueLen = 10
@@ -105,9 +106,8 @@ func (s *session) cleanup(err interface{}) {
 	s.closeOnce.Do(func() {
 		if s.conn != nil {
 			s.Close()
-			var conn net.Conn
-			conn, s.conn = s.conn, nil
-			conn.Close()
+			s.conn.Close()
+			s.conn = nil
 			s.eventWorker().fireEvent(SessionClosedEvent{s, err.(error)})
 		}
 	})
